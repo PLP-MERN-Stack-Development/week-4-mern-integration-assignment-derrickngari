@@ -1,0 +1,35 @@
+const express = require("express");
+const router = express.Router();
+const { 
+    createPost, 
+    getAllPosts, 
+    getPostsById, 
+    updatePost, 
+    deletePost,
+    addComment, 
+    updateComment, 
+    deleteComment,
+    addLike,
+    deleteLike,
+    getLikes,
+    getComments,
+    getCommentById
+ } = require('../controllers/postsControllers')
+const { authMiddleware } = require('../middlewares/authMiddlewares')
+const upload = require('../middlewares/uploadMiddleware')
+
+router.post("/posts", authMiddleware, upload.single("featuredImage"), createPost);
+router.get('/posts', getAllPosts)
+router.get("/posts/:id", getPostsById);
+router.put('/posts/:id', authMiddleware, updatePost);
+router.delete("/posts/:id", authMiddleware, deletePost);
+router.post('/posts/:id/comments', authMiddleware, addComment);
+router.put('/posts/:id/comments/:commentId', authMiddleware, updateComment);
+router.delete('/posts/:id/comments/:commentId', authMiddleware, deleteComment);
+router.post('/posts/:id/likes', authMiddleware, addLike);
+router.delete('/posts/:id/likes/:userId', authMiddleware, deleteLike);
+router.get('/posts/:id/likes', authMiddleware, getLikes);
+router.get('/posts/:id/comments', authMiddleware, getComments);
+router.get('/posts/:id/comments/:commentId', authMiddleware, getCommentById);
+
+module.exports = router;

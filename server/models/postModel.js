@@ -20,7 +20,6 @@ const PostSchema = new mongoose.Schema(
     },
     slug: {
       type: String,
-      required: true,
       unique: true,
     },
     excerpt: {
@@ -42,10 +41,18 @@ const PostSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    viewCount: {
-      type: Number,
-      default: 0,
-    },
+    likes: [
+      { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+      }
+    ],
+    viewCount: [
+      { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+      }
+    ],
     comments: [
       {
         user: {
