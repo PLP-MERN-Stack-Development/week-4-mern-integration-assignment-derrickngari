@@ -60,6 +60,13 @@ exports.getPostsById = async (req, res) => {
             .populate('comments.user', 'name');
 
         if (!post) return res.status(401).json({ message: "Post not found" })
+        
+        // If the user is logged in, track their id
+    if (req.user && !post.viewCount.includes(req.user.id)) {
+        post.viewCount.push(req.user.id);
+    }
+    await post.save();
+
         res.status(200).json(post);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -157,28 +164,37 @@ exports.deleteComment = async (req, res) => {
     }
 }
 //     addLike,
-exports.addLike = async (req, res) => {
-    const { id } = req.params;
-    const post = await Post.findById(id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    await post.updateOne({ $inc: { viewCount: 1 }, new: true });
-    res.status(200).json(post);
-}
-//     deleteLike,
-exports.deleteLike = async (req, res) => {
-    const { id } = req.params;
-    const post = await Post.findById(id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    await post.updateOne({ $inc: { viewCount: -1 } });
-    res.status(200).json(post);
-}
-//     getLikes,
-exports.getLikes = async (req, res) => {
-    const { id } = req.params;
-    const post = await Post.findById(id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    res.status(200).json(post.viewCount);
-}
+exports.toggleLike = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      const post = await Post.findById(id);
+      if (!post) return res.status(404).json({ message: "Post not found" });
+  
+      const userId = req.user.id;
+  
+      if (post.likes.includes(userId)) {
+        post.likes = post.likes.filter(u => u.toString() !== userId.toString());
+      } else {
+        post.likes.push(userId);
+      }
+  
+      await post.save();
+  
+      // Optional: Populate post author and comments
+      const updatedPost = await Post.findById(id)
+        .populate('author', 'name')
+        .populate('comments.user', 'name');
+  
+      res.json({
+        likesCount: updatedPost.likes.length,
+        post: updatedPost,
+      }); 
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  };
+  
 //     getComments,
 exports.getComments = async (req, res) => {
     try {

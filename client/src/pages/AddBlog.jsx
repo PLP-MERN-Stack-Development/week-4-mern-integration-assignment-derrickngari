@@ -79,6 +79,7 @@ const AddBlog = () => {
       setError(err.response?.data?.message || "Something went wrong.");
     }
   };
+  
 
   return (
     <div className="mx-auto mt-10 p-6 bg-slate-900 rounded shadow">

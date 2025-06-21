@@ -9,9 +9,7 @@ const {
     addComment, 
     updateComment, 
     deleteComment,
-    addLike,
-    deleteLike,
-    getLikes,
+    toggleLike,
     getComments,
     getCommentById
  } = require('../controllers/postsControllers')
@@ -20,16 +18,14 @@ const upload = require('../middlewares/uploadMiddleware')
 
 router.post("/posts", authMiddleware, upload.single("featuredImage"), createPost);
 router.get('/posts', getAllPosts)
-router.get("/posts/:id", getPostsById);
+router.get("/posts/:id", authMiddleware, getPostsById);
 router.put('/posts/:id', authMiddleware, updatePost);
 router.delete("/posts/:id", authMiddleware, deletePost);
 router.post('/posts/:id/comments', authMiddleware, addComment);
 router.put('/posts/:id/comments/:commentId', authMiddleware, updateComment);
 router.delete('/posts/:id/comments/:commentId', authMiddleware, deleteComment);
-router.post('/posts/:id/likes', authMiddleware, addLike);
-router.delete('/posts/:id/likes/:userId', authMiddleware, deleteLike);
-router.get('/posts/:id/likes', authMiddleware, getLikes);
-router.get('/posts/:id/comments', authMiddleware, getComments);
-router.get('/posts/:id/comments/:commentId', authMiddleware, getCommentById);
+router.post("/posts/:id/likes", authMiddleware, toggleLike);
+router.get('/posts/:id/comments', getComments);
+router.get('/posts/:id/comments/:commentId', getCommentById);
 
 module.exports = router;
